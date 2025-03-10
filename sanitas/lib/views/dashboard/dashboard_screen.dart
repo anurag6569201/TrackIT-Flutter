@@ -9,6 +9,8 @@ import 'package:sanitas/views/home_widget/home_widget.dart';
 import 'package:weather/weather.dart';
 import 'package:intl/intl.dart';
 import 'progress.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -21,13 +23,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   WeatherFactory wf = WeatherFactory(key);
   Location? loc; // Make it nullable
   wt.Weather? currentWeather;
+  List<dynamic> diseases = [];
+  int totalCases = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       HomeWidgetConfig.initialize().then((value) async {
-        await callApiAndUpdateUI(); // Ensure it completes before updating UI
+        await callApiAndUpdateUI();
+        fetchDiseaseData();
       });
     });
   }
@@ -48,6 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           image: "https://openweathermap.org/img/wn/${weatherData.weatherIcon}@2x.png",
           cityName: weatherData.areaName ?? "--",
           new_date: formattedDate,
+          total_cases:"500",
         );
       });
 
@@ -56,6 +62,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print("Error fetching location/weather: $e");
     }
   }
+
+  Future<void> fetchDiseaseData() async {
+      try {
+        final response = await http.get(Uri.parse('http://10.0.2.2:8000/map/api/diseases/'));
+
+        if (response.statusCode == 200) {
+          Map<String, dynamic> data = json.decode(response.body); // Parse as Map
+          List<dynamic> topDiseases = data['top_diseases'] ?? [];
+          int total = data['total_cases'] ?? 0;
+
+          setState(() {
+            diseases = topDiseases; // Assign the extracted list
+            totalCases = total; // Assign the extracted total
+          });
+
+        } else {
+          throw Exception('Failed to load disease data');
+        }
+      } catch (e) {
+        print('Error fetching disease data: $e');
+      }
+    }
 
   @override
   Widget build(BuildContext context) {
