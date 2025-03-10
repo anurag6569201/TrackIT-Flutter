@@ -7,6 +7,8 @@ import 'package:sanitas/constants/strings.dart';
 import 'package:sanitas/home_widget_config.dart';
 import 'package:sanitas/views/home_widget/home_widget.dart';
 import 'package:weather/weather.dart';
+import 'package:intl/intl.dart';
+import 'progress.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -17,33 +19,42 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   WeatherFactory wf = WeatherFactory(key);
-  Location loc = Location.pickLocation();
+  Location? loc; // Make it nullable
   wt.Weather? currentWeather;
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       HomeWidgetConfig.initialize().then((value) async {
-        callApiAndUpdateUI();
+        await callApiAndUpdateUI(); // Ensure it completes before updating UI
       });
     });
-    super.initState();
   }
 
-  callApiAndUpdateUI() {
-    loc = Location.pickLocation();
-    wf.currentWeatherByLocation(loc.lat, loc.long).then((w) {
-      currentWeather = wt.Weather(
-          weatherType: WeatherUtil().fromCode(w.weatherConditionCode),
-          weather: "${w.temperature?.celsius?.toStringAsFixed(2) ?? "--"}°",
-          desc: w.weatherDescription ?? "--",
-          image:
-          "https://openweathermap.org/img/wn/${w.weatherIcon}@2x.png",
-          cityName: w.areaName ?? "--");
-      HomeWidgetConfig.update(
-          context, HomeWidget(weather: currentWeather!));
-      setState(() {});
-    });
+  Future<void> callApiAndUpdateUI() async {
+    try {
+      loc = await Location.pickLocation(); // Wait for the user's real location
+      var weatherData = await wf.currentWeatherByLocation(loc!.lat, loc!.long);
+      
+      // Format the date properly
+      String formattedDate = DateFormat('EEEE, MMM d, yyyy').format(weatherData.date!);
+
+      setState(() {
+        currentWeather = wt.Weather(
+          weatherType: WeatherUtil().fromCode(weatherData.weatherConditionCode),
+          weather: "${weatherData.temperature?.celsius?.toStringAsFixed(2) ?? "--"}°",
+          desc: weatherData.weatherDescription ?? "--",
+          image: "https://openweathermap.org/img/wn/${weatherData.weatherIcon}@2x.png",
+          cityName: weatherData.areaName ?? "--",
+          new_date: formattedDate,
+        );
+      });
+
+      HomeWidgetConfig.update(context, HomeWidget(weather: currentWeather!));
+    } catch (e) {
+      print("Error fetching location/weather: $e");
+    }
   }
 
   @override
@@ -73,54 +84,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: CircularProgressIndicator(),
             ),
           Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: screenHeight / 15,
-                ),
-                Text(
-                  currentWeather?.desc ?? '--',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: screenWidth / 14,
-                      shadows: [
-                        BoxShadow(
-                            color: Colors.grey.withOpacity(0.6),
-                            spreadRadius: .1,
-                            blurRadius: 16)
-                      ]),
-                ),
-                Text(
-                  currentWeather?.cityName ?? '--',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: screenWidth / 20,
-                      shadows: [
-                        BoxShadow(
-                            color: Colors.grey.withOpacity(0.8),
-                            spreadRadius: .1,
-                            blurRadius: 16)
-                      ]),
-                ),
-                Text(
-                  currentWeather?.weather ?? '--',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: screenWidth / 5,
-                      shadows: [
-                        BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: .1,
-                            blurRadius: 16)
-                      ]),
-                ),
-              ],
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenHeight / 15, left: 12, right: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Row with Date, City, and Weather
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date (Top Left)
+                          Text(
+                            currentWeather?.new_date ?? '--',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth / 20,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          // City Name (Below Date)
+                          Text(
+                            currentWeather?.cityName ?? '--',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth / 15,
+                              fontWeight: FontWeight.w700,
+                              shadows: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.8),
+                                  spreadRadius: .1,
+                                  blurRadius: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Temperature (Right Side)
+                      Text(
+                        currentWeather?.weather ?? '--',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenWidth / 7,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Center(child: MultiColorProgressBar()),
+                ],
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

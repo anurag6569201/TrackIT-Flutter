@@ -6,11 +6,13 @@ class Weather {
   final String cityName;
   final String desc;
   final String image;
+  final String new_date;
 
   Weather(
       {required this.weatherType,
       required this.weather,
       required this.desc,
       required this.image,
-      required this.cityName});
+      required this.cityName,
+      required this.new_date});
 }
