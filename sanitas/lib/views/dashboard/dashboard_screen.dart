@@ -51,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       });
 
-      HomeWidgetConfig.update(context, HomeWidget(weather: currentWeather!));
+      HomeWidgetConfig.update(context, HomeWidget(currentWeather: currentWeather!));
     } catch (e) {
       print("Error fetching location/weather: $e");
     }
@@ -62,7 +62,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
+    return Container(
+      child:Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           callApiAndUpdateUI();
@@ -143,6 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
