@@ -61,6 +61,7 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/logo1.png
+    - lib/assets/app_icon.png
 
 
   # The following line ensures that the Material Icons font is
