@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
             tabs: [
               Tab(icon: Icon(Icons.home), text: 'Home'),
               Tab(icon: Icon(Icons.article), text: 'Updates'),
-              Tab(icon: Icon(Icons.book), text: 'Materials'),
+              Tab(icon: Icon(Icons.book), text: 'Blogs'),
               Tab(icon: Icon(Icons.info), text: 'About'),
             ],
           ),
@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
           children: [
             HomeSection(),
             NewsSection(),
-            MaterialSection(),
+            PostsList(),
             AboutSection(),
           ],
         ),

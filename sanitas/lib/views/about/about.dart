@@ -6,25 +6,19 @@ class AboutSection extends StatelessWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Aligns all text to the left
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('lib/assets/app_icon.png'),
-          ),
-          SizedBox(height: 20),
           Text(
-            'My Awesome App',
+            'Sanitas',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
           Text(
             'Version 1.0.0',
             style: TextStyle(color: Colors.grey),
           ),
           SizedBox(height: 20),
           Text(
-            'This is a sample app description. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            textAlign: TextAlign.center,
+            'Imagine having access to a real-time map that not only visualizes disease hotspots but also predicts future outbreaks, all at your fingertips. The Disease Heatmap, a groundbreaking mapping system, is set to revolutionize how we monitor and respond to health threats in our communities.',
           ),
           SizedBox(height: 30),
           ElevatedButton(
@@ -34,22 +28,9 @@ class AboutSection extends StatelessWidget {
             child: Text('Add Widget to Home Screen'),
           ),
           SizedBox(height: 20),
-          InkWell(
-            onTap: () {
-              // Open privacy policy
-            },
-            child: Text(
-              'Privacy Policy',
-              style: TextStyle(
-                color: Colors.blue,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
           Text(
-            'Developed by: Your Name\n\nSpecial thanks to:\n- Contributors\n- Testers\n- Open source projects',
-            textAlign: TextAlign.center,
+            'Developed by: Sanitas Team',
+            textAlign: TextAlign.center, // Only this text is centered
             style: TextStyle(color: Colors.grey),
           ),
         ],
