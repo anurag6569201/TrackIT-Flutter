@@ -8,9 +8,9 @@ import 'package:sanitas/home_widget_config.dart';
 import 'package:sanitas/views/home_widget/home_widget.dart';
 import 'package:weather/weather.dart';
 import 'package:intl/intl.dart';
-import 'progress.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'progress.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,8 +20,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  WeatherFactory wf = WeatherFactory(key);
-  Location? loc; // Make it nullable
+  final WeatherFactory wf = WeatherFactory(key);
+  Location? loc;
   wt.Weather? currentWeather;
   List<dynamic> diseases = [];
   int totalCases = 0;
@@ -29,21 +29,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      HomeWidgetConfig.initialize().then((value) async {
-        await callApiAndUpdateUI();
-        fetchDiseaseData();
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await HomeWidgetConfig.initialize();
+      await callApiAndUpdateUI();
+      fetchDiseaseData();
     });
   }
 
   Future<void> callApiAndUpdateUI() async {
     try {
-      loc = await Location.pickLocation(); // Wait for the user's real location
-      var weatherData = await wf.currentWeatherByLocation(loc!.lat, loc!.long);
-      
-      // Format the date properly
-      String formattedDate = DateFormat('EEEE, MMM d, yyyy').format(weatherData.date!);
+      loc = await Location.pickLocation();
+      final weatherData = await wf.currentWeatherByLocation(loc!.lat, loc!.long);
+      final formattedDate = DateFormat('EEEE, MMM d, yyyy').format(weatherData.date!);
 
       setState(() {
         currentWeather = wt.Weather(
@@ -53,65 +50,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
           image: "https://openweathermap.org/img/wn/${weatherData.weatherIcon}@2x.png",
           cityName: weatherData.areaName ?? "--",
           new_date: formattedDate,
-          total_cases:"500",
+          total_cases: "500",
         );
       });
 
       HomeWidgetConfig.update(context, HomeWidget(currentWeather: currentWeather!));
     } catch (e) {
-      print("Error fetching location/weather: $e");
+      debugPrint("Error fetching location/weather: $e");
     }
   }
 
   Future<void> fetchDiseaseData() async {
-      try {
-        final response = await http.get(Uri.parse('http://10.0.2.2:8000/map/api/diseases/'));
+    try {
+      final response = await http.get(Uri.parse('http://172.22.0.37:8000/map/api/diseases/'));
 
-        if (response.statusCode == 200) {
-          Map<String, dynamic> data = json.decode(response.body); // Parse as Map
-          List<dynamic> topDiseases = data['top_diseases'] ?? [];
-          int total = data['total_cases'] ?? 0;
-
-          setState(() {
-            diseases = topDiseases; // Assign the extracted list
-            totalCases = total; // Assign the extracted total
-          });
-
-        } else {
-          throw Exception('Failed to load disease data');
-        }
-      } catch (e) {
-        print('Error fetching disease data: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        setState(() {
+          diseases = data['top_diseases'] ?? [];
+          totalCases = data['total_cases'] ?? 0;
+        });
+      } else {
+        throw Exception('Failed to load disease data');
       }
+    } catch (e) {
+      debugPrint('Error fetching disease data: $e');
     }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      child:Scaffold(
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          callApiAndUpdateUI();
-        },
+        onPressed: callApiAndUpdateUI,
         elevation: 0,
-        backgroundColor: Colors.blueAccent.withOpacity(0.3),
+        backgroundColor: const Color.fromRGBO(18, 55, 42,1),
         child: const Icon(Icons.refresh),
       ),
       body: Stack(
         children: [
-          if (currentWeather?.weatherType != null)
-            WeatherBg(
-              weatherType: currentWeather!.weatherType,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-            )
-          else
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
           Align(
             alignment: Alignment.topLeft,
             child: Padding(
@@ -119,7 +100,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Row with Date, City, and Weather
+                  Image.asset(
+                    'lib/assets/logo1.png',
+                    height: 100,
+                  ),
+                  const Divider( 
+                    color: Colors.black,
+                    thickness: 1, 
+                    height: 10, 
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,52 +117,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Date (Top Left)
                           Text(
                             currentWeather?.new_date ?? '--',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color.fromRGBO(18, 55, 42,1),
                               fontSize: screenWidth / 20,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          // City Name (Below Date)
                           Text(
                             currentWeather?.cityName ?? '--',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color.fromRGBO(18, 55, 42,1),
                               fontSize: screenWidth / 15,
                               fontWeight: FontWeight.w700,
-                              shadows: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.8),
-                                  spreadRadius: .1,
-                                  blurRadius: 16,
-                                ),
-                              ],
                             ),
                           ),
                         ],
                       ),
-                      // Temperature (Right Side)
-                      Text(
-                        currentWeather?.weather ?? '--',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: screenWidth / 7,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            currentWeather?.weather ?? '--',
+                            style: TextStyle(
+                              color: Color.fromRGBO(18, 55, 42,1),
+                              fontSize: screenWidth / 20,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            '+$totalCases ↑',
+                            style: TextStyle(
+                              color: Color.fromRGBO(18, 55, 42,1),
+                              fontSize: screenWidth / 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Center(child: MultiColorProgressBar()),
+                  SizedBox(height: 8),
+                  Center(
+                    child: MultiColorProgressBar(
+                      diseases: diseases,
+                      totalCases: totalCases,
+                    ),
+                  ),
+
                 ],
               ),
             ),
           ),
         ],
-      ),
       ),
     );
   }

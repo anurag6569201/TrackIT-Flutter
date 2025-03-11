@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_weather_bg_null_safety/utils/weather_type.dart';
 import 'package:sanitas/models/weather.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -65,7 +64,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       height: 150,
       decoration: BoxDecoration(
         color: const Color.fromRGBO(173, 188, 159,1),
-        borderRadius: BorderRadius.circular(4), // Rounded corners
+        borderRadius: BorderRadius.circular(10), // Rounded corners
       ),
 
       child: Padding(
@@ -186,7 +185,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           width: totalWidth * percentageE,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(35, 136, 85, 0.839),
+                            color: Color.fromRGBO(82, 109, 130,1),
                           ),
                         ),
                       ),
@@ -200,7 +199,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           width: totalWidth * percentageD,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(25, 80, 60, 0.8),
+                            color: Color.fromRGBO(230, 255, 148,0.7),
                           ),
                         ),
                       ),
@@ -213,7 +212,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           width: totalWidth * percentageC,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(134, 214, 102, 0.8),
+                            color: Color.fromRGBO(157, 222, 139,0.5),
                           ),
                         ),
                       ),
@@ -226,7 +225,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           width: totalWidth * percentageB,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(75, 182, 196, 0.8),
+                            color: Color.fromRGBO(64, 165, 120,0.5),
                           ),
                         ),
                       ),
@@ -239,7 +238,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                           width: totalWidth * percentageA,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: Color.fromRGBO(30, 122, 188, 0.8),
+                            color: Color.fromRGBO(0, 103, 105,0.5),
                           ),
                         ),
                       ),
@@ -270,18 +269,18 @@ class _HomeWidgetState extends State<HomeWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    legendItem(Color.fromRGBO(35, 136, 85, 0.839), "${diseases[0]['name']}", "${diseases[0]['cases']}"),
-                    legendItem(Color.fromRGBO(25, 80, 60, 0.8), "${diseases[1]['name']}", "${diseases[1]['cases']}"),
-                    legendItem(Color.fromRGBO(134, 214, 102, 0.8), "${diseases[2]['name']}", "${diseases[2]['cases']}"),
+                    legendItem(Color.fromRGBO(0, 103, 105,0.5), "${diseases[0]['name']}", "${diseases[0]['cases']}"),
+                    legendItem(Color.fromRGBO(64, 165, 120,0.5), "${diseases[1]['name']}", "${diseases[1]['cases']}"),
+                    legendItem(Color.fromRGBO(157, 222, 139,0.5), "${diseases[2]['name']}", "${diseases[2]['cases']}"),
                   ],
                 ),
                 SizedBox(height: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    legendItem(Color.fromRGBO(75, 182, 196, 0.8), "${diseases[3]['name']}", "${diseases[3]['cases']}"),
-                    legendItem(Color.fromRGBO(30, 122, 188, 0.8), "${diseases[4]['name']}", "${diseases[4]['cases']}"),
-                    legendItem(Color.fromRGBO(66, 190, 147, 1), "${diseases[5]['name']}", "${diseases[5]['cases']}"),
+                    legendItem(Color.fromRGBO(230, 255, 148,0.5), "${diseases[3]['name']}", "${diseases[3]['cases']}"),
+                    legendItem(Color.fromRGBO(82, 109, 130,1), "${diseases[4]['name']}", "${diseases[4]['cases']}"),
+                    legendItem(Color.fromRGBO(255, 255, 255, 0), "${diseases[5]['name']}", "${diseases[5]['cases']}"),
                   ],
                 )
               ],

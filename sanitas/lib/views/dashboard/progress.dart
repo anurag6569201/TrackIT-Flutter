@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 class MultiColorProgressBar extends StatelessWidget {
+  final List<dynamic> diseases;
+  final int totalCases;
+  MultiColorProgressBar({required this.diseases, required this.totalCases});
   @override
   Widget build(BuildContext context) {
     double totalWidth = MediaQuery.of(context).size.width * 1; // 90% of screen width
 
     // Percentage values
-    double percentageA = 0.05; // 10%
-    double percentageB = 0.6; // 20%
-    double percentageC = 0.7; // 30%
+    double percentageA = (diseases[0]['cases']/totalCases); // 5%
+    double percentageB = (diseases[1]['cases']/totalCases); // 15%
+    double percentageC = (diseases[2]['cases']/totalCases); // 25%
+    double percentageD = (diseases[3]['cases']/totalCases); // 35%
+    double percentageE = (diseases[4]['cases']/totalCases); // 45%
 
     return Padding(
       padding: const EdgeInsets.all(0),
@@ -19,15 +24,24 @@ class MultiColorProgressBar extends StatelessWidget {
           Stack(
             children: [
               Container(
-                height: 16,
+                height: 12,
                 width: totalWidth,
               ),
-              Positioned(left: totalWidth * percentageA - 12, child: percentageIndicator("5%")),
-              Positioned(left: totalWidth * percentageB - 12, child: percentageIndicator("60%")),
-              Positioned(left: totalWidth * percentageC - 12, child: percentageIndicator("70%")),
+              Positioned(
+                left: totalWidth * (diseases[0]['cases'] / totalCases) - 12,
+                child: percentageIndicator("${((diseases[0]['cases'] / totalCases) * 100).toStringAsFixed(0)}%"),
+              ),
+              Positioned(
+                left: totalWidth * (diseases[2]['cases'] / totalCases) - 12,
+                child: percentageIndicator("${((diseases[2]['cases'] / totalCases) * 100).toStringAsFixed(0)}%"),
+              ),
+              Positioned(
+                left: totalWidth * (diseases[4]['cases'] / totalCases) - 12,
+                child: percentageIndicator("${((diseases[4]['cases'] / totalCases) * 100).toStringAsFixed(0)}%"),
+              ),
             ],
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 2),
 
           // Multi-color Progress Bar (With Background)
           Stack(
@@ -41,30 +55,15 @@ class MultiColorProgressBar extends StatelessWidget {
                   color: Colors.grey[300],
                 ),
               ),
-              // Largest segment (C) at the bottom
               Positioned.fill(
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
                     height: 12,
-                    width: totalWidth * percentageC,
+                    width: totalWidth * percentageE,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.redAccent.withOpacity(0.8),
-                    ),
-                  ),
-                ),
-              ),
-              // Middle segment (B) on top of C
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    height: 12,
-                    width: totalWidth * percentageB,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.greenAccent.withOpacity(0.8),
+                      color: Color.fromRGBO(82, 109, 130,1),
                     ),
                   ),
                 ),
@@ -75,13 +74,70 @@ class MultiColorProgressBar extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Container(
                     height: 12,
-                    width: totalWidth * percentageA,
+                    width: totalWidth * percentageD,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.blueAccent.withOpacity(0.8),
+                      color: Color.fromRGBO(230, 255, 148,0.7),
                     ),
                   ),
                 ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 12,
+                    width: totalWidth * percentageC,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color.fromRGBO(157, 222, 139,0.5),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 12,
+                    width: totalWidth * percentageB,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color.fromRGBO(64, 165, 120,0.5),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    height: 12,
+                    width: totalWidth * percentageA,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Color.fromRGBO(0, 103, 105,0.5),
+                    ),
+                  ),
+                ),
+              ),
+              
+            ],
+          ),
+          SizedBox(height: 2),
+          Stack(
+            children: [
+              Container(
+                height: 12,
+                width: totalWidth,
+              ),
+              Positioned(
+                left: totalWidth * (diseases[1]['cases'] / totalCases) - 12,
+                child: percentageIndicator("${((diseases[1]['cases'] / totalCases) * 100).toStringAsFixed(0)}%"),
+              ),
+              Positioned(
+                left: totalWidth * (diseases[3]['cases'] / totalCases) - 12,
+                child: percentageIndicator("${((diseases[3]['cases'] / totalCases) * 100).toStringAsFixed(0)}%"),
               ),
             ],
           ),
@@ -91,50 +147,51 @@ class MultiColorProgressBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              legendItem(Colors.blueAccent, "Disease A", "5%"),
-              legendItem(Colors.greenAccent, "Disease B", "60%"),
-              legendItem(Colors.redAccent, "Disease C", "70%"),
+              legendItem(Color.fromRGBO(0, 103, 105,0.5), "${diseases[0]['name']}", "${diseases[0]['cases']}"),
+              legendItem(Color.fromRGBO(64, 165, 120,0.5), "${diseases[1]['name']}", "${diseases[1]['cases']}"),
+              legendItem(Color.fromRGBO(157, 222, 139,0.5), "${diseases[2]['name']}", "${diseases[2]['cases']}"),
             ],
           ),
+          SizedBox(height: 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              legendItem(Color.fromRGBO(230, 255, 148,0.5), "${diseases[3]['name']}", "${diseases[3]['cases']}"),
+              legendItem(Color.fromRGBO(82, 109, 130,1), "${diseases[4]['name']}", "${diseases[4]['cases']}"),
+              legendItem(Color.fromRGBO(255, 255, 255, 0), "${diseases[5]['name']}", "${diseases[5]['cases']}"),
+            ],
+          )
         ],
       ),
     );
   }
 
-  // Widget to create percentage indicators dynamically
+  
   Widget percentageIndicator(String label) {
     return Column(
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 2),
-        Container(
-          width: 1.5,
-          height: 6,
-          color: Colors.black,
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold,color: Color.fromRGBO(18, 55, 42,1)),
         ),
       ],
     );
   }
-
-  // Widget to create the legend (color + disease name + percentage)
   Widget legendItem(Color color, String disease, String percentage) {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 6,
+          height: 6,
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
           ),
         ),
-        SizedBox(width: 6),
+        SizedBox(width: 4),
         Text(
           "$disease ($percentage)",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500,color: Color.fromRGBO(18, 55, 42,1)),
         ),
       ],
     );
